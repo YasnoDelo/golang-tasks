@@ -6,7 +6,7 @@ import (
 	"slices"
 )
 
-func actualCheck(expected, actual interface{}) bool {
+func checkEquality(expected, actual interface{}) bool {
 	switch exp := expected.(type) {
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 		return expected == actual
@@ -59,7 +59,7 @@ func actualCheck(expected, actual interface{}) bool {
 	return false
 }
 
-func printMsgAndArgs(t T, msgAndArgs ...interface{}) {
+func displayMessage(t T, msgAndArgs ...interface{}) {
 	t.Helper()
 
 	if len(msgAndArgs) == 0 {
@@ -77,12 +77,12 @@ func printMsgAndArgs(t T, msgAndArgs ...interface{}) {
 //
 // Returns true iff arguments are equal.
 func AssertEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) bool {
-	if actualCheck(expected, actual) {
+	if checkEquality(expected, actual) {
 		return true
 	}
 
 	t.Helper()
-	printMsgAndArgs(t, msgAndArgs...)
+	displayMessage(t, msgAndArgs...)
 
 	return false
 }
@@ -93,36 +93,36 @@ func AssertEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) b
 //
 // Returns true iff arguments are not equal.
 func AssertNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) bool {
-	if !actualCheck(expected, actual) {
+	if !checkEquality(expected, actual) {
 		return true
 	}
 
 	t.Helper()
-	printMsgAndArgs(t, msgAndArgs...)
+	displayMessage(t, msgAndArgs...)
 
 	return false
 }
 
 // RequireEqual does the same as AssertEqual but fails caller test immediately.
 func RequireEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) {
-	if actualCheck(expected, actual) {
+	if checkEquality(expected, actual) {
 		return
 	}
 
 	t.Helper()
-	printMsgAndArgs(t, msgAndArgs...)
+	displayMessage(t, msgAndArgs...)
 
 	t.FailNow()
 }
 
 // RequireNotEqual does the same as AssertNotEqual but fails caller test immediately.
 func RequireNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) {
-	if !actualCheck(expected, actual) {
+	if !checkEquality(expected, actual) {
 		return
 	}
 
 	t.Helper()
-	printMsgAndArgs(t, msgAndArgs...)
+	displayMessage(t, msgAndArgs...)
 
 	t.FailNow()
 }
