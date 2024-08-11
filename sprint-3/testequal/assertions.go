@@ -9,23 +9,22 @@ import (
 func checkEquality(expected, actual interface{}) bool {
 	switch exp := expected.(type) {
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-		return exp == actual
-
+		return checkIntEquality(exp, actual)
 	case string:
 		return checkStringEquality(exp, actual)
-
 	case map[string]string:
-		return checkMapStringEquality(exp, actual)
-
+		return checkMapEquality(exp, actual)
 	case []int:
-		return checkSliceIntEquality(exp, actual)
-
+		return checkIntSliceEquality(exp, actual)
 	case []byte:
-		return checkSliceByteEquality(exp, actual)
-
+		return checkByteSliceEquality(exp, actual)
 	default:
 		return false
 	}
+}
+
+func checkIntEquality(expected interface{}, actual interface{}) bool {
+	return expected == actual
 }
 
 func checkStringEquality(expected string, actual interface{}) bool {
@@ -35,23 +34,38 @@ func checkStringEquality(expected string, actual interface{}) bool {
 	return false
 }
 
-func checkMapStringEquality(expected map[string]string, actual interface{}) bool {
+func checkMapEquality(expected map[string]string, actual interface{}) bool {
 	if act, ok := actual.(map[string]string); ok {
-		return maps.Equal(expected, act)
+		if expected == nil && act == nil {
+			return true
+		}
+		if expected != nil && act != nil && maps.Equal(expected, act) {
+			return true
+		}
 	}
 	return false
 }
 
-func checkSliceIntEquality(expected []int, actual interface{}) bool {
+func checkIntSliceEquality(expected []int, actual interface{}) bool {
 	if act, ok := actual.([]int); ok {
-		return slices.Equal(expected, act)
+		if expected == nil && act == nil {
+			return true
+		}
+		if expected != nil && act != nil && slices.Equal(expected, act) {
+			return true
+		}
 	}
 	return false
 }
 
-func checkSliceByteEquality(expected []byte, actual interface{}) bool {
+func checkByteSliceEquality(expected []byte, actual interface{}) bool {
 	if act, ok := actual.([]byte); ok {
-		return bytes.Equal(expected, act)
+		if expected == nil && act == nil {
+			return true
+		}
+		if expected != nil && act != nil && bytes.Equal(expected, act) {
+			return true
+		}
 	}
 	return false
 }

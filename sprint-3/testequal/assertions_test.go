@@ -1,4 +1,4 @@
-package testequal_test
+package testequal
 
 import (
 	"fmt"
@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	assertions "github.com/mipt-golang-course/golang-tasks/sprint-3/testequal"
 )
 
 func TestEqual(t *testing.T) {
@@ -32,11 +30,11 @@ func TestEqual(t *testing.T) {
 		{name: "bytes", expected: []byte(`abc`), actual: []byte(`abc`)},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			assertions.AssertEqual(t, tc.expected, tc.actual)
-			assertions.RequireEqual(t, tc.expected, tc.actual)
+			AssertEqual(t, tc.expected, tc.actual)
+			RequireEqual(t, tc.expected, tc.actual)
 
 			mockT := new(testing.T)
-			require.False(t, assertions.AssertNotEqual(mockT, tc.expected, tc.actual))
+			require.False(t, AssertNotEqual(mockT, tc.expected, tc.actual))
 		})
 	}
 }
@@ -83,11 +81,11 @@ func TestNotEqual(t *testing.T) {
 		{expected: struct{}{}, actual: struct{}{}}, // unsupported type
 	} {
 		t.Run(fmt.Sprintf("%T_%T", tc.expected, tc.actual), func(t *testing.T) {
-			assertions.AssertNotEqual(t, tc.expected, tc.actual)
-			assertions.RequireNotEqual(t, tc.expected, tc.actual)
+			AssertNotEqual(t, tc.expected, tc.actual)
+			RequireNotEqual(t, tc.expected, tc.actual)
 
 			mockT := new(testing.T)
-			require.False(t, assertions.AssertEqual(mockT, tc.expected, tc.actual))
+			require.False(t, AssertEqual(mockT, tc.expected, tc.actual))
 		})
 	}
 }
@@ -106,10 +104,10 @@ func (m *mockT) Helper() {}
 
 func TestErrorMessage(t *testing.T) {
 	mockT := &mockT{}
-	assertions.RequireNotEqual(mockT, 1, 1, "1 != 1")
+	RequireNotEqual(mockT, 1, 1, "1 != 1")
 	require.Contains(t, mockT.errMsg, "1 != 1")
 
-	assertions.RequireEqual(mockT, 1, 2, "%d must be equal to %d", 1, 2)
+	RequireEqual(mockT, 1, 2, "%d must be equal to %d", 1, 2)
 	require.Contains(t, mockT.errMsg, "1 must be equal to 2")
 }
 
@@ -117,7 +115,7 @@ func BenchmarkRequireEqualInt64(b *testing.B) {
 	t := &mockT{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		assertions.RequireEqual(t, int64(1), int64(1))
+		RequireEqual(t, int64(1), int64(1))
 	}
 }
 
@@ -136,7 +134,7 @@ func BenchmarkRequireEqualString(b *testing.B) {
 	mockT := &mockT{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		assertions.RequireEqual(mockT, s1, s2)
+		RequireEqual(mockT, s1, s2)
 	}
 }
 
@@ -158,7 +156,7 @@ func BenchmarkRequireEqualMap(b *testing.B) {
 	mockT := &mockT{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		assertions.RequireEqual(mockT, m1, m2)
+		RequireEqual(mockT, m1, m2)
 	}
 }
 
