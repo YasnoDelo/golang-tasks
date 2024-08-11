@@ -1,9 +1,7 @@
-package main
+package mycheck
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
 	"unicode"
 )
@@ -12,9 +10,9 @@ import (
 type Errors []error
 
 // Error - метод для вывода всех ошибок слайса через "; "
-func (e Errors) Error() string {
-	var msgs []string
-	for _, err := range e {
+func (error Errors) Error() string {
+	msgs := make([]string, 0, len(error))
+	for _, err := range error {
 		msgs = append(msgs, err.Error())
 	}
 	return strings.Join(msgs, ";")
@@ -48,23 +46,23 @@ func MyCheck(input string) error {
 	return nil
 }
 
-func main() {
-	for {
-		fmt.Printf("Укажите строку (q для выхода): ")
-		reader := bufio.NewReader(os.Stdin)
-		ret, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		ret = strings.TrimRight(ret, "\n")
-		if ret == `q` {
-			break
-		}
-		if err = MyCheck(ret); err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(`Строка прошла проверку`)
-		}
-	}
-}
+// func main() {
+// 	for {
+// 		fmt.Printf("Укажите строку (q для выхода): ")
+// 		reader := bufio.NewReader(os.Stdin)
+// 		ret, err := reader.ReadString('\n')
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			continue
+// 		}
+// 		ret = strings.TrimRight(ret, "\n")
+// 		if ret == `q` {
+// 			break
+// 		}
+// 		if err = MyCheck(ret); err != nil {
+// 			fmt.Println(err)
+// 		} else {
+// 			fmt.Println(`Строка прошла проверку`)
+// 		}
+// 	}
+// }
