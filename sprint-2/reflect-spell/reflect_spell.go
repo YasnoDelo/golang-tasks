@@ -26,27 +26,42 @@ func CastToAll(spell Spell, objects []interface{}) {
 }
 
 func CastTo(spell Spell, object interface{}) {
-	// Check if the object implements CastReceiver
+	// Попытка передать заклинание объекту, реализующему интерфейс CastReceiver
 	if receiver, ok := object.(CastReceiver); ok {
 		receiver.ReceiveSpell(spell)
 		return
 	}
 
-	// Use reflection to find the attribute and apply the spell
+	// Получение значения объекта с помощью рефлексии
 	v := reflect.ValueOf(object)
 	if v.Kind() == reflect.Ptr {
 		v = v.Elem()
 	}
+
+	// Попытка найти поле по имени и применить заклинание
 	field := v.FieldByName(spell.Char())
-	if field.IsValid() && field.CanSet() {
-		if field.Kind() == reflect.Int {
-			field.SetInt(field.Int() + int64(spell.Value()))
-		} else {
-			log.Printf("Cannot apply spell to field %s: unsupported type %s", spell.Char(), field.Kind())
-		}
-	} else {
-		log.Printf("Field %s not found or cannot be set in object %v", spell.Char(), object)
+	if !field.IsValid() || !field.CanSet() {
+		logInvalidField(spell, object)
+		return
 	}
+
+	applySpellToField(spell, field)
+}
+
+func logInvalidField(spell Spell, object interface{}) {
+	log.Printf("Field %s not found or cannot be set in object %v", spell.Char(), object)
+}
+
+func applySpellToField(spell Spell, field reflect.Value) {
+	if field.Kind() == reflect.Int {
+		field.SetInt(field.Int() + int64(spell.Value()))
+	} else {
+		logUnsupportedFieldType(spell, field)
+	}
+}
+
+func logUnsupportedFieldType(spell Spell, field reflect.Value) {
+	log.Printf("Cannot apply spell to field %s: unsupported type %s", spell.Char(), field.Kind())
 }
 
 type spell struct {
